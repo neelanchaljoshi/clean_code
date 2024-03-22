@@ -27,10 +27,9 @@ class Database:
 
 class HangmanGame:
     def __init__(self, max_mistakes=12, path_to_database = None):
-        self.word = Database(path_to_database).choose_random_word()
+        self.word = Database(path_to_database).choose_random_word().upper()
         self.max_mistakes = max_mistakes
         self.mistakes = 0
-        self.isGuessed = False
         self.guessed_letters = set()
         self.unguessed_letters = set(self.word) if self.word else set()
         self.current_guess = ['_'] * len(self.word) if self.word else []
@@ -61,19 +60,49 @@ class HangmanGame:
         return False
     
     def check_if_letter_is_present_in_word(self):
+        self.guessed_letters.add(self.user_input)
         if self.user_input in self.unguessed_letters:
             self.unguessed_letters.remove(self.user_input)
-            self.guessed_letters.add(self.user_input)
             return True
         return False
     
-    def update_current_guess(self):
-        for i, letter in enumerate(self.word):
-            if letter == self.user_input:
-                self.current_guess[i] = letter
     
+    def update_game_state(self):
+        if not self.check_if_letter_is_present_in_word():
+            self.mistakes += 1
+        else:
+            for i, letter in enumerate(self.word):
+                if letter == self.user_input:
+                    self.current_guess[i] = letter
+    
+    def print_current_status(self):
+        print("You have {} mistakes remaining".format(self.max_mistakes - self.mistakes))
+        print("Current status is {}\n".format(''.join(self.current_guess)))
+
+    def play_game(self):
+        self.start_game()
+        while self.mistakes < self.max_mistakes:
+            self.get_input_from_user()
+            if not self.check_if_input_is_valid():
+                self.print_current_status()
+                continue
+            if self.check_if_letter_is_already_guessed():
+                self.print_current_status()
+                continue
+            self.update_game_state()
+            self.print_current_status()
+            if not self.unguessed_letters:
+                print("You are a master of the English Language. You guessed the word correctly.")
+                break
+        else:
+            print("You are a loser. So dumb. The word was {}".format(self.word))
     
 
+
+
+if __name__ == '__main__':
+    game = HangmanGame(path_to_database=os.path.join(os.path.dirname(__file__),"..", "resources","words.txt"))
+    game.play_game()
 
     
 
