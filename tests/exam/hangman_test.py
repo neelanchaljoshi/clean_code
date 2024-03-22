@@ -3,7 +3,7 @@ from ...exam.hangman import HangmanGame, Database
 import os
 
 
-def test_load_words_from_file(mocker):
+def test_load_words_from_file():
     db = Database(path = os.path.join(os.path.dirname(__file__), 'test_words.txt'))
     assert db.load_words_from_file() == ['happy\n', 'sad\n', 'hehehe\n']
 
@@ -84,4 +84,9 @@ def test_if_letter_present_in_word(mocker):
     game.update_game_state()
     assert game.current_guess == ['T', '_', '_', '_', '_', '_', '_', '_', 'T']
 
-
+def test_short_game_run(mocker):
+    mocker.patch('random.choice', return_value='abs')
+    game = HangmanGame(path_to_database=os.path.join(os.path.dirname(__file__), 'test_words.txt'))
+    mocker.patch('builtins.input', side_effect=['a', 'b', 'c', 's'])
+    game.play_game()
+    assert game.mistakes == 1
