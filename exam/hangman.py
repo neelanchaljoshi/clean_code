@@ -8,4 +8,74 @@ Depending on your installation, you might need
 to call python3 instead of python.
 """
 
-print("Hello World!")
+import random
+import os
+
+class Database:
+    def __init__(self, path = None):
+        self.path = path
+        self.chosen_word = None
+
+    def load_words_from_file(self):
+        with open(self.path, 'r') as file:
+            return file.readlines()
+    
+    def choose_random_word(self):
+        words = self.load_words_from_file()
+        self.chosen_word = random.choice(words).strip()
+        return self.chosen_word
+
+class HangmanGame:
+    def __init__(self, max_mistakes=12, path_to_database = None):
+        self.word = Database(path_to_database).choose_random_word()
+        self.max_mistakes = max_mistakes
+        self.mistakes = 0
+        self.isGuessed = False
+        self.guessed_letters = set()
+        self.unguessed_letters = set(self.word) if self.word else set()
+        self.current_guess = ['_'] * len(self.word) if self.word else []
+        self.user_input = None
+
+    def start_game(self):
+        print("Welcome to Hangman!")
+        print("The word has {} letters.".format(len(self.word)))
+        print("You can make {} mistakes.".format(self.max_mistakes))
+
+    
+    def get_input_from_user(self):
+        self.user_input = input("Please enter your guess: ").upper()
+    
+    def check_if_input_is_valid(self):
+        if len(self.user_input) != 1:
+            print("Please enter only one letter.")
+            return False
+        if not self.user_input.isalpha():
+            print("Please enter a letter.")
+            return False
+        return True
+    
+    def check_if_letter_is_already_guessed(self):
+        if self.user_input in self.guessed_letters:
+            print("You have already guessed this letter.")
+            return True
+        return False
+    
+    def check_if_letter_is_present_in_word(self):
+        if self.user_input in self.unguessed_letters:
+            self.unguessed_letters.remove(self.user_input)
+            self.guessed_letters.add(self.user_input)
+            return True
+        return False
+    
+    def update_current_guess(self):
+        for i, letter in enumerate(self.word):
+            if letter == self.user_input:
+                self.current_guess[i] = letter
+    
+    
+
+
+    
+
+
+
