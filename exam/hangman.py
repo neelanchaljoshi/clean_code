@@ -103,8 +103,3 @@ class HangmanGame:
 if __name__ == '__main__':
     game = HangmanGame(path_to_database=os.path.join(os.path.dirname(__file__),"..", "resources","words.txt"))
     game.play_game()
-
-    
-
-
-

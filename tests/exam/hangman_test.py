@@ -1,4 +1,3 @@
-import pytest
 from ...exam.hangman import HangmanGame, Database
 import os
 
